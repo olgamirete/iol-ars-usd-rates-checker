@@ -126,19 +126,23 @@ while True:
     decision = input('(C)heck rates / (E)xit: ')
     
     if decision.lower() == 'c':
-        start_time = time.time()
-        trio.run(main)
-        # Lo siguiente corre de modo sincrónico, una vez que la parte
-        # asincrónica haya terminado.
-        for par_ARS_USD in pares_de_bonos_ARS_USD:
-            calculate_rates_and_store_in_dict(par_ARS_USD)
-            print_rates_for_par_de_bonos_ARS_USD(par_ARS_USD, 2)
-        # pprint.pprint(pares_de_bonos_ARS_USD)
-        # print(pares_de_bonos_ARS_USD)
-        running_time = round(time.time()-start_time, 2)
-        print('Consulta realizada en ' + str(running_time) + ' segundos.')
+        try:
+            start_time = time.time()
+            trio.run(main)
+            # Lo siguiente corre de modo sincrónico, una vez que la parte
+            # asincrónica haya terminado.
+            for par_ARS_USD in pares_de_bonos_ARS_USD:
+                calculate_rates_and_store_in_dict(par_ARS_USD)
+                print_rates_for_par_de_bonos_ARS_USD(par_ARS_USD, 2)
+            # pprint.pprint(pares_de_bonos_ARS_USD)
+            # print(pares_de_bonos_ARS_USD)
+            running_time = round(time.time()-start_time, 2)
+            print('Consulta realizada en ' + str(running_time) + ' segundos.')
+        except httpx.exceptions.ReadTimeout:
+            print('La consulta no se pudo realizar en el tiempo esperado.')
+            print('Por favor, inténtelo de nuevo.')
 
     elif decision.lower() == 'e':
         exit()
     else:
-        print('That is not a valid option')
+        print('That is not a valid optioön')
