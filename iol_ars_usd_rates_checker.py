@@ -145,4 +145,4 @@ while True:
     elif decision.lower() == 'e':
         exit()
     else:
-        print('That is not a valid optioön')
+        print('That is not a valid option')
