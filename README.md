@@ -3,3 +3,8 @@
 This is a test to get the conversion rates when buying and selling ARS and USD through bonds at www.invertironline.com.
 
 Currently under development.
+
+# Dependencies:
+
+pip install trio
+pip install httpx
