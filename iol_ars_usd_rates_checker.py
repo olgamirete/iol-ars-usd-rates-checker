@@ -54,7 +54,10 @@ def get_precio_compra(bono_dict):
 
 async def start_http_request(par_de_bonos_ARS_USD, currency, client):
     mercado = par_de_bonos_ARS_USD['mercado']
-    par_de_bonos_ARS_USD['bono_dict_' + currency] = await get_bono_dict(mercado, par_de_bonos_ARS_USD[currency], client)
+    par_de_bonos_ARS_USD['bono_dict_' + currency] = await get_bono_dict(
+        mercado,
+        par_de_bonos_ARS_USD[currency],
+        client)
     return True
 
 def round_rate_and_format_as_str(rate, decimals):
