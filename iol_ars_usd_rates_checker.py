@@ -17,8 +17,8 @@ access_object = json.loads(res.text)
 access_token = access_object['access_token']
 
 def get_url_by_bono(mercado, bono):
-        url = f'https://api.invertironline.com/api/v2/{mercado}/Titulos/{bono}/Cotizacion'
-        return url
+    url = f'https://api.invertironline.com/api/v2/{mercado}/Titulos/{bono}/Cotizacion'
+    return url
 
 async def get_bono_dict(mercado, bono, client):
     res = await client.get(
