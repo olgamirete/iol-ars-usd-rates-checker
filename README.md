@@ -6,5 +6,5 @@ Currently under development.
 
 # Dependencies:
 
-pip install trio
+pip install trio <br />
 pip install httpx
