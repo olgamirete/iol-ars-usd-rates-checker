@@ -7,14 +7,52 @@ import time
 
 pares_de_bonos_ARS_USD = json.load(open('files/bonos_ARS_USD.json'))
 
-url = 'https://api.invertironline.com/token'
+def authenticate_and_get_access_token():
+    
+    access_token = ''
 
-user_access_data = {'grant_type': 'password'}
-user_access_data['username'] = input('Por favor ingrese su usuario: ')
-user_access_data['password'] = getpass.getpass('Por favor ingrese su contraseña: ')
-res = httpx.post(url, data=user_access_data)
-access_object = json.loads(res.text)
-access_token = access_object['access_token']
+    while True:
+        access_token = get_new_access_token()
+        if check_if_properly_authenticated(access_token) == False:
+            flag_stop = input('Could not log in. Do you want to try again? (Y)es / (N)o: ')
+            if flag_stop.lower() == 'y':
+                pass
+            elif flag_stop.lower() == 'n':
+                exit()
+            else:
+                print('That is not a valid option.')
+        else:
+            break
+    return access_token
+
+def get_new_access_token():
+    url = 'https://api.invertironline.com/token'
+    user_access_data = {'grant_type': 'password'}
+    user_access_data['username'] = input('Por favor ingrese su usuario: ')
+    user_access_data['password'] = getpass.getpass('Por favor ingrese su contraseña: ')
+    res = httpx.post(url, data=user_access_data)
+    
+    if res.status_code == 200:
+        access_object = json.loads(res.text)
+        access_token = access_object['access_token']
+    else:
+        access_token = ''
+
+    return access_token
+
+def check_if_properly_authenticated(access_token):
+    
+    client = httpx.Client()
+
+    client.headers.update({
+        'Authorization': 'bearer ' + access_token
+    })
+    res = client.get('https://api.invertironline.com/api/v2/estadocuenta')
+
+    if res.status_code == 200:
+        return True
+    else:
+        return False
 
 def get_url_by_bono(mercado, bono):
     url = f'https://api.invertironline.com/api/v2/{mercado}/Titulos/{bono}/Cotizacion'
@@ -106,20 +144,22 @@ def print_rates_for_par_de_bonos_ARS_USD(par_de_bonos_ARS_USD, decimals):
     
     return True
 
-async def main():
-    # async with httpx.AsyncClient() as client:
-    client = httpx.AsyncClient()
+async def main(access_token):
+    async with httpx.AsyncClient() as client:
+    # client = httpx.AsyncClient()
 
-    client.headers.update({
-        'Authorization': 'bearer ' + access_token
-    })
-    
-    async with trio.open_nursery() as nursery:
-        for par_ARS_USD in pares_de_bonos_ARS_USD:
-            nursery.start_soon(start_http_request, par_ARS_USD, 'ARS', client)
-            nursery.start_soon(start_http_request, par_ARS_USD, 'USD', client)
+        client.headers.update({
+            'Authorization': 'bearer ' + access_token
+        })
+        
+        async with trio.open_nursery() as nursery:
+            for par_ARS_USD in pares_de_bonos_ARS_USD:
+                nursery.start_soon(start_http_request, par_ARS_USD, 'ARS', client)
+                nursery.start_soon(start_http_request, par_ARS_USD, 'USD', client)
 
-    await client.aclose()
+    # await client.aclose()
+
+access_token = ''
 
 while True:
     
@@ -127,8 +167,12 @@ while True:
     
     if decision.lower() == 'c':
         try:
+            # Check if already authenticated
+            if check_if_properly_authenticated(access_token) == False:
+                access_token = authenticate_and_get_access_token()
+
             start_time = time.time()
-            trio.run(main)
+            trio.run(main, access_token)
             # Lo siguiente corre de modo sincrónico, una vez que la parte
             # asincrónica haya terminado.
             for par_ARS_USD in pares_de_bonos_ARS_USD:
