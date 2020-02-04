@@ -172,6 +172,7 @@ while True:
                 access_token = authenticate_and_get_access_token()
 
             start_time = time.time()
+            # Lo siguiente corre de modo asincrónico.
             trio.run(main, access_token)
             # Lo siguiente corre de modo sincrónico, una vez que la parte
             # asincrónica haya terminado.
