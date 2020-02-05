@@ -124,6 +124,30 @@ def calculate_rates_and_store_in_dict(par_de_bonos_ARS_USD):
 
     return True
 
+def get_clean_list_of_rates(ars2usd_or_usd2ars, pares_de_bonos_dict):
+    
+    dict_key = None
+
+    if ars2usd_or_usd2ars == 'ars2usd':
+        dict_key = 'ARS/USD_when_ARS_to_USD'
+    elif ars2usd_or_usd2ars == 'usd2ars':
+        dict_key = 'ARS/USD_when_USD_to_ARS'
+    
+    if dict_key is not None:
+        rates_list = []
+        for par_de_bonos in pares_de_bonos_dict:
+            try:
+                rates_list.append(float(par_de_bonos[dict_key]))
+            except ValueError:
+                pass # If the rate could not be calculated before and is thus
+                    # showing a '-' character, we have to ignore it while
+                    # checking for maximums and minimums.
+        return rates_list
+    else:
+        raise RuntimeError('Wrong value for argument "ars2usd_or_usd2ars" ' \
+                         + 'in function "get_clean_list_of_rates". Please ' \
+                         + 'use only the values "ars2usd" or "usd2ars".')
+
 def print_rates_for_par_de_bonos_ARS_USD(par_de_bonos_ARS_USD, decimals):
 
     label_1 = par_de_bonos_ARS_USD['ARS'] + ' -> ' + par_de_bonos_ARS_USD['USD']
@@ -142,7 +166,7 @@ def print_rates_for_par_de_bonos_ARS_USD(par_de_bonos_ARS_USD, decimals):
     
     return True
 
-async def update_rates(access_token):
+async def update_rates(access_token, pares_de_bonos_ARS_USD):
     async with httpx.AsyncClient() as client:
     # client = httpx.AsyncClient()
 
@@ -173,7 +197,7 @@ def main():
 
                 start_time = time.time()
                 # Lo siguiente corre de modo asincrónico.
-                trio.run(update_rates, access_token)
+                trio.run(update_rates, access_token, pares_de_bonos_ARS_USD)
                 # Lo siguiente corre de modo sincrónico, una vez que la parte
                 # asincrónica haya terminado.
                 for par_ARS_USD in pares_de_bonos_ARS_USD:
