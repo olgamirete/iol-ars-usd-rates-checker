@@ -159,35 +159,38 @@ async def update_rates(access_token):
 
     # await client.aclose()
 
-access_token = ''
-
-while True:
+def main():
     
-    decision = input('(C)heck rates / (E)xit: ')
-    
-    if decision.lower() == 'c':
-        try:
-            # Check if already authenticated
-            if check_if_properly_authenticated(access_token) == False:
-                access_token = authenticate_and_get_access_token()
+    access_token = ''
 
-            start_time = time.time()
-            # Lo siguiente corre de modo asincrónico.
-            trio.run(main, access_token)
-            # Lo siguiente corre de modo sincrónico, una vez que la parte
-            # asincrónica haya terminado.
-            for par_ARS_USD in pares_de_bonos_ARS_USD:
-                calculate_rates_and_store_in_dict(par_ARS_USD)
-                print_rates_for_par_de_bonos_ARS_USD(par_ARS_USD, 2)
-            # pprint.pprint(pares_de_bonos_ARS_USD)
-            # print(pares_de_bonos_ARS_USD)
-            running_time = round(time.time()-start_time, 2)
-            print('Consulta realizada en ' + str(running_time) + ' segundos.')
-        except httpx.exceptions.ReadTimeout:
-            print('La consulta no se pudo realizar en el tiempo esperado.')
-            print('Por favor, inténtelo de nuevo.')
+    while True:
+        decision = input('(C)heck rates / (E)xit: ')
+        
+        if decision.lower() == 'c':
+            try:
+                # Check if already authenticated
+                if check_if_properly_authenticated(access_token) == False:
+                    access_token = authenticate_and_get_access_token()
 
-    elif decision.lower() == 'e':
-        exit()
-    else:
-        print('That is not a valid option')
+                start_time = time.time()
+                # Lo siguiente corre de modo asincrónico.
+                trio.run(update_rates, access_token)
+                # Lo siguiente corre de modo sincrónico, una vez que la parte
+                # asincrónica haya terminado.
+                for par_ARS_USD in pares_de_bonos_ARS_USD:
+                    calculate_rates_and_store_in_dict(par_ARS_USD)
+                    print_rates_for_par_de_bonos_ARS_USD(par_ARS_USD, 2)
+                print(min(list(a['ARS/USD_when_ARS_to_USD'] for a in pares_de_bonos_ARS_USD)))
+                # print(max(a['ARS/USD_when_USD_to_ARS'] for a in pares_de_bonos_ARS_USD))
+                # pprint.pprint(pares_de_bonos_ARS_USD)
+                # print(pares_de_bonos_ARS_USD)
+                running_time = round(time.time()-start_time, 2)
+                print('Consulta realizada en ' + str(running_time) + ' segundos.')
+            except httpx.exceptions.ReadTimeout:
+                print('La consulta no se pudo realizar en el tiempo esperado.')
+                print('Por favor, inténtelo de nuevo.')
+
+        elif decision.lower() == 'e':
+            exit()
+        else:
+            print('That is not a valid option')
