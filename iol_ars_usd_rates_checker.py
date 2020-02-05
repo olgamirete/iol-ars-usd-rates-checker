@@ -103,25 +103,32 @@ def round_rate_and_format_as_str(rate, decimals):
         rate = '-'
     return rate
 
-def calculate_rates_and_store_in_dict(par_de_bonos_ARS_USD):
+def calculate_rates_and_store_in_dict(par_de_bonos_ARS_USD, flag_ignore_zeroes = True):
 
     precio_compra_bono_ARS = get_precio_compra(par_de_bonos_ARS_USD['bono_dict_ARS'])
     precio_venta_bono_ARS = get_precio_venta(par_de_bonos_ARS_USD['bono_dict_ARS'])
     precio_compra_bono_USD = get_precio_compra(par_de_bonos_ARS_USD['bono_dict_USD'])
     precio_venta_bono_USD = get_precio_venta(par_de_bonos_ARS_USD['bono_dict_USD'])
 
+    # Rate ARS/USD when going from ARS to USD
     try:
         rate_when_ARS_to_USD = precio_venta_bono_ARS/precio_compra_bono_USD
+        if flag_ignore_zeroes == True and rate_when_ARS_to_USD == 0:
+            rate_when_ARS_to_USD = '-'
     except ZeroDivisionError:
         rate_when_ARS_to_USD = '-'
-    par_de_bonos_ARS_USD['ARS/USD_when_ARS_to_USD'] = rate_when_ARS_to_USD
     
+    # Rate ARS/USD when going from USD to ARS
     try:
         rate_when_USD_to_ARS = precio_compra_bono_ARS/precio_venta_bono_USD
+        if flag_ignore_zeroes == True and rate_when_USD_to_ARS == 0:
+            rate_when_USD_to_ARS = '-'
     except ZeroDivisionError:
         rate_when_USD_to_ARS = '-'
+    
+    par_de_bonos_ARS_USD['ARS/USD_when_ARS_to_USD'] = rate_when_ARS_to_USD
     par_de_bonos_ARS_USD['ARS/USD_when_USD_to_ARS'] = rate_when_USD_to_ARS
-
+    
     return True
 
 def get_clean_list_of_rates(ars2usd_or_usd2ars, pares_de_bonos_dict):
