@@ -8,3 +8,7 @@ Currently under development.
 
 pip install trio <br />
 pip install httpx
+
+# License
+
+MIT
