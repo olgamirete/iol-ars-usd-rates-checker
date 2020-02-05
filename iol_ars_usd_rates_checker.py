@@ -211,7 +211,13 @@ def main():
                     calculate_rates_and_store_in_dict(par_ARS_USD)
                     print_rates_for_par_de_bonos_ARS_USD(par_ARS_USD, 2)
                 
-                # print(max(a['ARS/USD_when_USD_to_ARS'] for a in pares_de_bonos_ARS_USD))
+                rate_when_ars2usd = min(get_clean_list_of_rates('ars2usd', pares_de_bonos_ARS_USD))
+                rate_when_usd2ars = max(get_clean_list_of_rates('usd2ars', pares_de_bonos_ARS_USD))
+                
+                print(rate_when_ars2usd)
+                print(rate_when_usd2ars)
+                print(rate_when_usd2ars/rate_when_ars2usd-1)
+
                 # pprint.pprint(pares_de_bonos_ARS_USD)
                 # print(pares_de_bonos_ARS_USD)
                 running_time = round(time.time()-start_time, 2)
