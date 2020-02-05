@@ -144,7 +144,7 @@ def print_rates_for_par_de_bonos_ARS_USD(par_de_bonos_ARS_USD, decimals):
     
     return True
 
-async def main(access_token):
+async def update_rates(access_token):
     async with httpx.AsyncClient() as client:
     # client = httpx.AsyncClient()
 
