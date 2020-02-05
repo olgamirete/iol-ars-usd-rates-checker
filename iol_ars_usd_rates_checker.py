@@ -180,7 +180,7 @@ def main():
                 for par_ARS_USD in pares_de_bonos_ARS_USD:
                     calculate_rates_and_store_in_dict(par_ARS_USD)
                     print_rates_for_par_de_bonos_ARS_USD(par_ARS_USD, 2)
-                print(min(list(a['ARS/USD_when_ARS_to_USD'] for a in pares_de_bonos_ARS_USD)))
+                
                 # print(max(a['ARS/USD_when_USD_to_ARS'] for a in pares_de_bonos_ARS_USD))
                 # pprint.pprint(pares_de_bonos_ARS_USD)
                 # print(pares_de_bonos_ARS_USD)
