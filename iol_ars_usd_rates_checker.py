@@ -5,8 +5,6 @@ import getpass
 # import pprint
 import time
 
-pares_de_bonos_ARS_USD = json.load(open('files/bonos_ARS_USD.json'))
-
 def authenticate_and_get_access_token():
     
     access_token = ''
@@ -162,6 +160,7 @@ async def update_rates(access_token):
 def main():
     
     access_token = ''
+    pares_de_bonos_ARS_USD = json.load(open('files/bonos_ARS_USD.json'))
 
     while True:
         decision = input('(C)heck rates / (E)xit: ')
