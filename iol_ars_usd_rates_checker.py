@@ -194,3 +194,5 @@ def main():
             exit()
         else:
             print('That is not a valid option')
+
+main()
